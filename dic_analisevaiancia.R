@@ -54,7 +54,7 @@ plot(ajustados,residuo, pch=19)
 # Para transformações pode usar as funcoes/pacote
 boxcox((Estacas+0.05)~Cultivar) # eliminar o zero
 # Dados de contagem geralmente é raiz quadrada    
-# Lição de casa fazer a transformação e anilisar os resíduos
+# Lição de casa fazer a transformação e analisar os resíduos
 
 Estacas.sqrt<-Estacas^(1/2)
 
@@ -83,7 +83,7 @@ s<-sqrt(s.2)
 
 residuo.padronizado<-(residuo-0)/s
 
-qqnorm(residuo.padronizado)
+qqnorm(residuo.padronizado, pch=19)
 qqline(residuo.padronizado)
 
 ajustados<-m.hat+matrix(rep(ti.hat,J),byrow = F, ncol=J, nrow = I )
