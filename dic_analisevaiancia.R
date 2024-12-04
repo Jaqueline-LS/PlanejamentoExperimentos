@@ -56,7 +56,7 @@ boxcox((Estacas+0.05)~Cultivar) # eliminar o zero
 # Dados de contagem geralmente é raiz quadrada    
 # Lição de casa fazer a transformação e analisar os resíduos
 
-Estacas.sqrt<-Estacas^(1/2)
+Estacas.sqrt<-(Estacas+0.5)^(1/2)
 
 
 
@@ -93,4 +93,11 @@ hist(residuo, freq=F, col="#dcedc1", xlim=c(-3,3))
 curve(dnorm,-3,3, add=T)
 
 shapiro.test(residuo)
+
+# Teste do F máximo
+si
+# Pega a maxima divide pela minima e olha na tabelinha da F, nesse caso seria 4 variancias e 16 graus de liberdade(ou 4)
+
+mod1=crd(Cultivar,Estacas)
+
 
