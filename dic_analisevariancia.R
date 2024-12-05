@@ -98,3 +98,10 @@ curve(dnorm,-3,3, add=T)
 
 shapiro.test(residuo)
 
+# Teste do F máximo
+si
+# Pega a maxima divide pela minima e olha na tabelinha da F, nesse caso seria 4 variancias e 16 graus de liberdade(ou 4)
+
+mod1=crd(Cultivar,Estacas)
+
+
