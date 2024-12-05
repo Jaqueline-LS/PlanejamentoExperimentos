@@ -48,7 +48,11 @@ qqline(residuo.padronizado)
 # Transformação
 
 ajustados<-m.hat+matrix(rep(ti.hat,J),byrow = F, ncol=J, nrow = I)
-plot(ajustados,residuo, pch=19)
+plot(ajustados,residuo, pch=19, main="Gráfico dos resíduos pelos valores ajustados")
+
+Estacas.residuo<-data.frame(residuo=as.vector(residuo),trat=rep(c("A","B","C","D"),each=5))
+bartlett.test(residuo ~ trat, data = Estacas.residuo)
+
 
 # Estabilizar a variância
 # Para transformações pode usar as funcoes/pacote
@@ -56,7 +60,7 @@ boxcox((Estacas+0.05)~Cultivar) # eliminar o zero
 # Dados de contagem geralmente é raiz quadrada    
 # Lição de casa fazer a transformação e analisar os resíduos
 
-Estacas.sqrt<-Estacas^(1/2)
+Estacas.sqrt<-(Estacas+0.5)^(1/2)
 
 
 
@@ -89,7 +93,7 @@ qqline(residuo.padronizado)
 ajustados<-m.hat+matrix(rep(ti.hat,J),byrow = F, ncol=J, nrow = I )
 plot(ajustados, residuo, pch=19)
 
-hist(residuo, freq=F, col="#dcedc1", xlim=c(-3,3))
+hist(residuo.padronizado, freq=F, col="#dcedc1", xlim=c(-3,3))
 curve(dnorm,-3,3, add=T)
 
 shapiro.test(residuo)

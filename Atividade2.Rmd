@@ -1,0 +1,107 @@
+---
+title: "Planejamento de Experimentos - Atividade 2"
+author: "Jaqueline Lamas da Silva"
+date: "2024-12-04"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library("ExpDes") #utiliza a restrição sum(ti)=0
+library(readr)
+library("MASS")
+estacas <- read_table("estacas.txt")
+attach(estacas)
+```
+
+\newpage
+
+## Resíduos (Delineamento Inteiramente Causalizado)
+
+```{r}
+y.ij<-matrix(Estacas, byrow=T,ncol=5, nrow=4)
+I<-dim(y.ij)[1]
+J<-dim(y.ij)[2]
+
+m.hat<- sum(y.ij)/(I*J)
+
+ti.hat<-apply(y.ij, 1,FUN=function(x)mean(x)-m.hat)
+# Restrição soma de ti.hat é igual zero
+
+residuo<-y.ij-m.hat-matrix(rep(ti.hat,J),byrow = F, ncol=J, nrow = I )
+
+residuo.squared<-residuo^2
+
+si<-apply(residuo.squared,1,FUN=function(x)sum(x)/I) #variância no trat i
+
+s.2<-sum(residuo^2)/(I*(J-1)) # variância média
+
+s<-sqrt(s.2)
+
+residuo.padronizado<-(residuo-0)/s
+
+qqnorm(residuo.padronizado,pch=19)
+qqline(residuo.padronizado)
+
+shapiro.test(residuo.padronizado)
+
+```
+
+Temos evidências de que os resíduos não seguem uma distribuição normal.
+
+```{r}
+ajustados<-m.hat+matrix(rep(ti.hat,J),byrow = F, ncol=J, nrow = I)
+plot(ajustados,residuo, pch=19)
+
+```
+
+O gráfico dos resíduos acima apresenta um padrão de um funil, isso é um indicativo de heterocedasticidade. Vimos que, com os dados originais os presupostos de normalidade dos resíduos e de homocedasticidade não foram atendidos.
+
+\newpage
+
+## Transformação
+
+Podemos aplicar uma transformação nos dados buscando atender aos presupostos.
+
+```{r}
+boxcox((Estacas+0.05)~Cultivar)
+```
+
+Pela função box-cox o lambda ótimo está entre 0 e 1. E, como são dados de contagem, a transformação raiz quadrada ou box-cox com $\lambda = \frac{1}{2}$ é indicada.
+
+```{r}
+Estacas.sqrt<-(Estacas+0.5)^(1/2)
+y.ij<-matrix(Estacas.sqrt, byrow=T,ncol=5, nrow=4)
+I<-dim(y.ij)[1]
+J<-dim(y.ij)[2]
+m.hat<- sum(y.ij)/(I*J)
+ti.hat<-apply(y.ij, 1,FUN=function(x)mean(x)-m.hat)
+residuo<-y.ij-m.hat-matrix(rep(ti.hat,J),byrow = F, ncol=J, nrow = I )
+residuo.squared<-residuo^2
+si<-apply(residuo.squared,1,FUN=function(x)sum(x)/I) #variância no trat i
+
+s.2<-sum(residuo^2)/(I*(J-1)) # variância média
+
+s<-sqrt(s.2)
+
+residuo.padronizado<-(residuo-0)/s
+
+qqnorm(residuo.padronizado, pch=19)
+qqline(residuo.padronizado)
+
+hist(residuo.padronizado, freq=F, col="#dcedc1", xlim=c(-3,3))
+curve(dnorm,-3,3, add=T)
+
+shapiro.test(residuo)
+
+```
+
+Com a tranformação não temos evidências para rejeitar a hipótese de normalidade dos resíduos. Ou seja, é razoável assumir que os resíduos são normais.
+
+```{r}
+ajustados<-m.hat+matrix(rep(ti.hat,J),byrow = F, ncol=J, nrow = I )
+plot(ajustados, residuo, pch=19)
+
+```
+
+Além disso, a transformação parece ter estabilizado a variância. Diante disso, podemos seguir para a análise de variâncias (ANOVA) com os dados transformados.
