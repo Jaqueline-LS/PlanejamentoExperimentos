@@ -37,6 +37,9 @@ sum(si)/I
 
 s.2<-sum(residuo^2)/(I*(J-1)) # variância média
 
+
+
+
 s<-sqrt(s.2)
 
 residuo.padronizado<-(residuo-0)/s
@@ -121,3 +124,12 @@ QMRes<-SQRes/((J-1)*(I))
 Estatistica.F<-QMTrat/QMRes
 
 pf(Estatistica.F,I-1,(J-1)*I, lower.tail = F)
+
+# CV dos dados brutos
+
+CV_bruto<-s/m.hat*100
+# 35% é considerado alto, não homogêneos
+# Não é por que o cv é alto que o experiento é ruim, neste caso a variabilidade do processo era alta mesmo
+
+
+# Tem que concluir e explicar a conclusão no contexto do prblema
