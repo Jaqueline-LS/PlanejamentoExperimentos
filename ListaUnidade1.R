@@ -106,3 +106,12 @@ pf(estatis.F,(I-1), I*(J-1), lower.tail = F)
 
 
 Aleatoriz<-sample(rep(1:5,c(6,6,6,6,6)),30, replace = F)
+
+
+# Exercicio 7
+
+catalizadores<-data.frame(y=c(58.2,57.2,58.4,55.8,54.9,
+                 56.3,54.5,57.0,55.3,
+                 50.1,54.2,55.4,
+                 52.9,49.9,50.0,51.7),  trat=rep(c(1,2,3,4),c(5,4,3,4)))
+
