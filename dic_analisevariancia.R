@@ -31,7 +31,7 @@ residuo<-y.ij-m.hat-matrix(rep(ti.hat,J),byrow = F, ncol=J, nrow = I )
 
 residuo.squared<-residuo^2
 
-si<-apply(residuo.squared,1,FUN=function(x)sum(x)/I) #variância no trat i
+si<-apply(residuo.squared,1,FUN=function(x)sum(x)/J-1) #variância no trat i
 
 sum(si)/I
 
