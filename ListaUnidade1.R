@@ -3,14 +3,14 @@ library("ExpDes")
 library("dplyr")
 library("MASS")
 
-material<-data.frame(y=c(110, 1, 880, 495,
-                         7, 194, 157, 2, 
-                         1256, 4, 5276, 7040,
-                         5, 5307, 29, 178, 
-                         18, 4355, 10050, 2), trat=rep(c(1,2,3,4,5),c(4,4,4,4,4)))
-
+material<-data.frame(y=c(110, 1, 880, 495, 7, 
+                         157, 2, 1256, 7040, 5,
+                         194, 4,5276, 5307, 29,
+                         178, 18, 4355, 10050, 2), trat=rep(c(1,2,3,4,5),4))
+# 
 # modelo<-crd(material$trat, material$y, hvar = "bartlett")
 # modelo$residuals
+
 
 
 
@@ -26,10 +26,11 @@ for(i in 1:I)
   t[i]<-mean(material$y[material$trat==i]) - m.hat
 }
 
-# Criando um vetor com repeticoes do t_i para facilitar as contas
-# Os quatro primeiros valores de "y" são do tratamento 1, etc.
-t.i<-rep(c(t[1],t[2],t[3],t[4],t[5]),c(4,4,4,4,4)) # o efeito do trat_i repetido 4 vezes
+t # efeito dos tratamentos
 
+
+# Criando um vetor com repeticoes do t_i para facilitar as contas
+t.i<-rep(c(t[1],t[2],t[3],t[4],t[5]),4) # o efeito do trat_i repetido 
 residuo<- material$y - m.hat - t.i
 
 
@@ -52,7 +53,7 @@ s.2<-sum(residuo^2)/(I*(J-1)) # variância média
 
 #------desvio
 s<-sqrt(s.2)
-
+sd(residuo)
 # Residuo padronizado
 residuo.padronizado<-(residuo-0)/s
 
@@ -70,6 +71,7 @@ hist(residuo.padronizado)
 # ---------- Homocedasticidade ou homogeneidade de variâncias
 # F maximo
 H<-max(s.i)/min(s.i)
+
 pf(H,J-1,J-1, lower.tail = F)
 
 # Bartlett
@@ -91,7 +93,7 @@ for(i in 1:I)
 {
   t[i]<-mean(y.tr[material$trat==i]) - m.hat
 }
-t.it<-rep(c(t[1],t[2],t[3],t[4],t[5]),c(4,4,4,4,4))
+t.it<-rep(c(t[1],t[2],t[3],t[4],t[5]),4)
 residuo<-y.tr-m.hat - t.it
 
 s.2<-sum(residuo^2)/(I*(J-1)) # variância média
@@ -129,6 +131,7 @@ pf(H,J-1,J-1, lower.tail = F)
 
 
 #--------------ANOVA------------
+
 J<-4
 I<-5
 correcao<- (sum(y.tr)^2)/(I*J)
@@ -144,13 +147,18 @@ SQTotal<-sum(y.tr^2) - correcao
 SQRes<- SQTotal - SQTrat
 
 tabela<-cbind(CV=c("Trat","Resi","Tot"),df=c(I-1,I*(J-1),(I*J)-1) ,SQ=c(SQTrat, SQRes,SQTotal), QM=c(SQTrat/(I-1),SQRes/I*(J-1),"-"))
+tabela
 estatis.F<-(SQTrat/(I-1))/(SQRes/(I*(J-1)))
 
 pf(estatis.F,(I-1), I*(J-1), lower.tail = F)
+estatis.F
 qf(0.05,(I-1), I*(J-1), lower.tail = F)
 
 
-Aleatoriz<-sample(rep(1:5,c(6,6,6,6,6)),30, replace = F)
+# crd(material$trat, log(material$y)) # Apenas para comparar os resultados da ANOVA
+
+#--------------------------------------------------------------
+Aleatoriz<-sample(rep(c("Catuai","MN","Icatu","Obatâ","CR"),c(9,9,9,9,9)),45, replace = F)
 
 
 # Exercicio 7
@@ -260,8 +268,9 @@ SQTotal<-sum(y.tr^2) - correcao
 SQRes<- SQTotal - SQTrat
 
 tabela<-cbind(CV=c("Trat","Resi","Tot"),df=c(I-1,I*(J-1),(I*J)-1) ,SQ=c(SQTrat,SQTotal, SQRes), QM=c(SQTrat/(I-1),SQRes/(I*(J-1)),"-"))
+tabela
 estatis.F<-(SQTrat/(I-1))/(SQRes/(I*(J-1)))
-
+estatis.F
 pf(estatis.F,(I-1), I*(J-1), lower.tail = F)
 
 
@@ -271,7 +280,7 @@ pf(estatis.F,(I-1), I*(J-1), lower.tail = F)
 
 
 
-Aleatoriz<-sample(rep(1:5,c(6,6,6,6,6)),30, replace = F)
+Aleatoriz<-sample(rep(1:5,c(9,9,9,9,9)),45, replace = F)
 
 
 # Exercicio 7

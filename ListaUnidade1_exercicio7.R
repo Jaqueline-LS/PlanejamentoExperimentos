@@ -1,3 +1,7 @@
+rm(list=ls(all=T))
+library("ExpDes")
+library("dplyr")
+library("MASS")
 dados<-data.frame(y=c(58.2,57.2,58.4,55.8,54.9,
                       56.3,54.5,57.0,55.3,
                       50.1,54.2,55.4,
@@ -34,7 +38,7 @@ bartlett.test(x=dados$y,g=dados$trat)
 plot(residuo.pad~m.i)
 
 # Anova
-correcao<-sum(dados$y)^2/N # É O QUADRADO DA SOMAAA
+correcao<-(sum(dados$y)^2)/N # É O QUADRADO DA SOMAAA
 
 T.i<-numeric(I)
 
@@ -48,6 +52,7 @@ T.i.2.ni<- (T.i^2) / n.i
 SQTrat<-sum(T.i.sqrt.ni)-correcao
 
 SQTotal<- sum(dados$y^2)-correcao
+
 
 SQRes<- SQTotal - SQTrat
 

@@ -60,3 +60,46 @@ qqline(residuo)
 hist(residuo)
 
 
+
+# Anova
+N<-nrow(golfe)
+I<-3
+nome<-c("V","E","I")
+correcao<-(sum(golfe$resp)^2)/N # É O QUADRADO DA SOMAAA
+
+T.i<-numeric(I)
+n.i<-c(10,7,8)
+
+for (i in 1:I)
+{
+  T.i[i]<-sum(golfe$resp[golfe$trat==nome[i]])
+}
+
+T.i.2.ni<- (T.i^2) / n.i
+
+SQTrat<-sum(T.i.2.ni)-correcao
+
+SQTotal<- sum(golfe$resp^2)-correcao
+
+
+SQRes<- SQTotal - SQTrat
+
+
+QMTr<-SQTrat/(I-1)
+
+QMR<- SQRes/12
+
+est.F<-QMTr/QMR
+
+pf(est.F, 3,12, lower.tail = F)
+
+m.hat<-mean(dados$y)
+cv<-s/m.hat*100
+cv
+
+
+pf(2.1221, 2,22, lower.tail = F)
+pf(3.7944, 1,22, lower.tail = F)
+pf(0.4493, 3,22, lower.tail = F)
+
+
