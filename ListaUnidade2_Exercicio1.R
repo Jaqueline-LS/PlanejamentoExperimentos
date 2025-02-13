@@ -59,7 +59,7 @@ si<-apply(residuo.squared,1,FUN=function(x)sum(x)/I) #variância no trat i
 
 sum(si)/I
 
-s.2<-sum(residuo^2)/(I*(J-1)) # variância média
+s.2<-sum(residuo^2)/(8) # variância média
 
 
 s<-sqrt(s.2)
@@ -78,4 +78,7 @@ SQ4<-(t(Ti)%*%c.4)^2 / (J*sum(c.4^2))
 RL<-lm(resp~trat, data=ratos)
 
 
-
+library("ExpDes")
+obj<-rbd(ratos$trat, ratos$bloco, ratos$resp,quali = F)
+shapiro.test(obj$residuals)
+bartlett.test(ratos$resp,ratos$trat, data=ratos)
