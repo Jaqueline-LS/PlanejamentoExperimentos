@@ -124,3 +124,5 @@ Ad.T1<-dados2 |>
   filter(trabalhador==1)
 Ad.T1<-Ad.T1$`sum(tempo_estoque)`
 
+
+
