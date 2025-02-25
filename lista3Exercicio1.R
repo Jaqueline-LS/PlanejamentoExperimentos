@@ -92,6 +92,7 @@ TT<-dados2 |>
 
 
 
+
 TT<-TT$`sum(tempo_estoque)`
 
 
