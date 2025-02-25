@@ -88,6 +88,10 @@ TT<-dados2 |>
   group_by(trabalhador)|>
   summarise(sum(tempo_estoque))
 
+
+
+
+
 TT<-TT$`sum(tempo_estoque)`
 
 

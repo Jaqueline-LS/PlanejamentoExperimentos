@@ -1,3 +1,5 @@
+library("dplyr")
+library("tidyr")
 # Criando o data.frame
 dados <- data.frame(
   maquina = rep(c(1, 2, 3, 4), each = 24),  # 4 máquinas x 6 tratamentos x 4 repetições
@@ -98,3 +100,42 @@ qm<-c(68.34,99.09,5.7604,2.5382,44.03125,0.5104167,1.309033)
 qmres<-4.489583
 f<-qm/qmres
 round(pf(f, df1=c(1,3,2,3,2,6,6), df2=72, lower.tail = F),3)
+
+
+
+# Medias de maquinas
+
+TM.medias<-dados |>
+  group_by(maquina) |>
+  summarise(tm=mean(comprimento))
+medias.M<-TM.medias$tm
+
+
+qtukey(0.05, nmeans = 4, df = 72, lower.tail = F)
+
+f<-c(11.2812,32,28.125)/4.489583
+pf(f, df1=1,df2=72, lower.tail = F)
+
+# Tabela hora e processo
+dados |>
+  group_by(processo, hora) |>
+  summarise(tph=mean(comprimento)) |>
+  pivot_wider(names_from = hora, values_from = tph)
+pf(c(1.0348,0.5893), df1=2, df2=72, lower.tail = F)
+
+cores<-c("#a8e6cf",'#ff8b94',"#c2a5cf","#edf8b1")
+
+
+mediasHP<-dados |>
+  group_by(processo, hora) |>
+  summarise(mph=mean(comprimento))
+mediasHP$hora<-c(1:3,1:3)
+plot(mediasHP$mph~mediasHP$hora, col=cores[mediasHP$processo], pch=19, xaxt = "n")
+axis(1, 1:3,c("08:00", "11:00", "15:00"))
+legend("topleft",legend=paste0("processo ",1:2), lwd=2, col=cores[1:2] ,bty="")
+
+
+plot(mediasHP$mph~mediasHP$processo, col=cores[c(1:3,1:3)], pch=19)
+legend("topright",legend=paste0("hora ",1:3), lwd=2, col=cores[1:3] ,bty="")
+
+
