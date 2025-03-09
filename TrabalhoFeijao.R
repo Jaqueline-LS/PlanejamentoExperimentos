@@ -90,7 +90,7 @@ residuo.padronizado<-(residuo-0)/s
 
 qqnorm(residuo.padronizado, pch=19)
 qqline(residuo.padronizado)
-plot(residuo, pch=19)
+plot(residuo.padronizado, pch=19)
 
 plot(residuo.padronizado~feijao.log$ajustado, pch=19)
 
