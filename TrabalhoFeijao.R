@@ -1,6 +1,8 @@
+# Limpeza do ambiente e carregamento de pacotes
+rm(list = ls(all = TRUE))
 library("dplyr")
 library("MASS")
-cores<-c("#C9E69E","#FFC29A","#FF9B95")
+cores <- c("#C9E69E", "#FFC29A", "#FF9B95")
 
 # Criando o DataFrame
 feijao <- data.frame(
@@ -15,85 +17,130 @@ feijao <- data.frame(
   )
 )
 
+feijao<-feijao |>
+  filter(bloco!="Jaqueline")
 # Obtenção dos resíduos
-I<-9
-J<-5
+I <- 9
+J <- 5
 
-## Valor ajustado y_ij = m + bj +ti 
-m<-mean(feijao$y)
+## Valor ajustado y_ij = m + bj + ti 
+m <- mean(feijao$y)
 
-bj<- feijao |>
+bj <- feijao |>
   group_by(bloco) |>
-  summarise(bj=mean(y))
+  summarise(bj = mean(y) - m)
 
-ti<- feijao |>
+ti <- feijao |>
   group_by(trat) |>
-  summarise(ti=mean(y))
+  summarise(ti = mean(y) - m)
 
 feijao <- feijao |>
   inner_join(ti) |>
   inner_join(bj) |>
-  mutate(ajustado= m +ti+bj) |>
-  mutate(resid = y-ajustado)
+  mutate(ajustado = m + ti + bj) |>
+  mutate(resid = y - ajustado)
 
-residuo<-feijao$resid
+residuo <- feijao$resid
 
+s.2 <- sum(residuo^2) / ((I - 1) * (J - 1)) 
+s <- sqrt(s.2)
 
-s.2<-sum(residuo^2)/(I*(J-1)) 
-s<-sqrt(s.2)
+residuo.padronizado <- (residuo - 0) / s
 
-residuo.padronizado<-(residuo-0)/s
-
-qqnorm(residuo.padronizado, pch=19)
+# Gráfico Q-Q plot dos resíduos padronizados
+png("qqplot_residuos_padronizados.png")
+qqnorm(residuo.padronizado, pch = 19, main = "Q-Q Plot dos Resíduos Padronizados", xlab = "Quantis Teóricos", ylab = "Resíduos Padronizados")
 qqline(residuo.padronizado)
-plot(residuo, pch=19)
+dev.off()
 
-plot(residuo.padronizado~feijao$ajustado, pch=19)
+# Gráfico de resíduos
+png("plot_residuos.png")
+plot(residuo, pch = 19, main = "Gráfico de Resíduos", xlab = "Índice", ylab = "Resíduos")
+dev.off()
 
+# Gráfico de resíduos padronizados vs valores ajustados
+png("residuos_padronizados_vs_ajustados.png")
+plot(residuo.padronizado ~ feijao$ajustado, pch = 19, main = "Resíduos Padronizados vs Valores Ajustados", xlab = "Valores Ajustados", ylab = "Resíduos Padronizados")
+dev.off()
+
+# Teste de Bartlett para homogeneidade de variâncias
 bartlett.test(residuo ~ feijao$trat, data = feijao)
 
-# O teste não rejeitou a homogeneidade, 
-# porém pelo gráfico esta claro o padrão de funil
-cv<-s/m * 100
+# Coeficiente de variação
+cv <- s / m * 100
+
 attach(feijao)
-boxcox((y+0.001)~trat)
+boxcox((feijao$y + 0.001) ~ feijao$trat)
 
-# VAMOS FAZER O LOG
+# Transformação logarítmica
 feijao.log <- feijao %>%
-  mutate(log.y=log(y+0.001))  %>%
-  dplyr::select(bloco,trat,y=log.y)
+  mutate(log.y = log(y + 0.001))  %>%
+  dplyr::select(bloco, trat, y = log.y)
 
-## Valor ajustado y_ij = m + bj +ti 
-m<-mean(feijao.log$y)
+## Valor ajustado y_ij = m + bj + ti 
+m <- mean(feijao.log$y)
 
-bj<- feijao.log |>
+bj <- feijao.log |>
   group_by(bloco) |>
-  summarise(bj=mean(y))
+  summarise(bj = mean(y) - m)
 
-ti<- feijao.log |>
+ti <- feijao.log |>
   group_by(trat) |>
-  summarise(ti=mean(y))
+  summarise(ti = mean(y) - m)
 
 feijao.log <- feijao.log |>
   inner_join(ti) |>
   inner_join(bj) |>
-  mutate(ajustado= m +ti+bj) |>
-  mutate(resid = y-ajustado)
+  mutate(ajustado = m + ti + bj) |>
+  mutate(resid = y - ajustado)
 
-residuo<-feijao.log$resid
+residuo <- feijao.log$resid
 
+s.2 <- sum(residuo^2) / (I * (J - 1)) 
+s <- sqrt(s.2)
 
-s.2<-sum(residuo^2)/(I*(J-1)) 
-s<-sqrt(s.2)
+residuo.padronizado <- (residuo - 0) / s
 
-residuo.padronizado<-(residuo-0)/s
-
-qqnorm(residuo.padronizado, pch=19)
+# Gráfico Q-Q plot dos resíduos padronizados após transformação logarítmica
+png("qqplot_residuos_padronizados_log.png")
+qqnorm(residuo.padronizado, pch = 19, main = "Q-Q Plot dos Resíduos Padronizados (Log)", xlab = "Quantis Teóricos", ylab = "Resíduos Padronizados")
 qqline(residuo.padronizado)
-plot(residuo.padronizado, pch=19)
+dev.off()
 
-plot(residuo.padronizado~feijao.log$ajustado, pch=19)
+# Gráfico de resíduos padronizados após transformação logarítmica
+png("plot_residuos_padronizados_log.png")
+plot(residuo.padronizado, pch = 19, main = "Gráfico de Resíduos Padronizados (Log)", xlab = "Índice", ylab = "Resíduos Padronizados")
+dev.off()
 
+# Gráfico de resíduos padronizados vs valores ajustados após transformação logarítmica
+png("residuos_padronizados_vs_ajustados_log.png")
+plot(residuo.padronizado ~ feijao.log$ajustado, pch = 19, main = "Resíduos Padronizados vs Valores Ajustados (Log)", xlab = "Valores Ajustados", ylab = "Resíduos Padronizados")
+dev.off()
+
+# Teste de Bartlett para homogeneidade de variâncias após transformação logarítmica
 bartlett.test(residuo ~ feijao.log$trat, data = feijao.log)
 
 
+
+  
+
+#----Anova-------
+
+Bj <- feijao.log |>
+  group_by(bloco) |>
+  summarise(Bj = sum(y))
+
+Ti <- feijao.log |>
+  group_by(trat) |>
+  summarise(Ti = sum(y))
+
+attach(feijao.log)
+
+CORRECAO <- (sum(y)^2)/(I*J)
+SQTOTAL <- sum(y^2) - CORRECAO
+SQTRAT <- sum(Ti$Ti^2)/(J) - CORRECAO
+SQBLOCO <- sum(Bj$Bj^2)/(I) - CORRECAO
+SQRES<- SQTOTAL-SQTRAT-SQBLOCO
+
+
+ExpDes::rbd(feijao.log$trat, feijao.log$bloco, feijao.log$y)
